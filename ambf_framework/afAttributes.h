@@ -1104,6 +1104,22 @@ public:
 };
 
 
+struct afContactSensorAttributes: public afSensorAttributes{
+public:
+    afContactSensorAttributes(){
+        m_distanceThreshold = 0.0;
+        m_processContactDetails = true;
+        m_visible = false;
+        m_visibleSize = 10;
+    }
+
+    double m_distanceThreshold; // Distance threshold between objects for contact to count
+    bool m_processContactDetails; // If true, process contact ponits, normals, etc. Otherwise just names of objects in contact
+    bool m_visible;
+    double m_visibleSize;
+};
+
+
 struct afFileObjectAttributes{
 public:
     afFileObjectAttributes(){}

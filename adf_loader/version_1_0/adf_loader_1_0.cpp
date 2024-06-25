@@ -475,6 +475,9 @@ afSensorType ADFUtils::getSensorTypeFromString(const string &a_str)
     else if (a_str.compare("Resistance") == 0 || a_str.compare("resistance") == 0 || a_str.compare("RESISTANCE") == 0){
         type = afSensorType::RESISTANCE;
     }
+    else if (a_str.compare("Contact") == 0 || a_str.compare("contact") == 0 || a_str.compare("CONTACT") == 0){
+        type = afSensorType::CONTACT;
+    }
 
     return type;
 }
@@ -1983,6 +1986,9 @@ bool ADFLoader_1_0::loadSensorAttribs(YAML::Node *a_node, afSensorAttributes *at
     case afSensorType::RESISTANCE:{
         return loadResistanceSensorAttribs(a_node, (afResistanceSensorAttributes*)attribs);
     }
+    case afSensorType::CONTACT:{
+        return loadContactSensorAttribs(a_node, (afContactSensorAttributes*)attribs);
+    }
         break;
     default:{
         cerr << "SENSOR TYPE " << typeNode.as<string>() << " NOT IMPLEMENTED YET" << endl;
@@ -2117,7 +2123,7 @@ bool ADFLoader_1_0::loadResistanceSensorAttribs(YAML::Node *a_node, afResistance
 {
     YAML::Node& node = *a_node;
     if (node.IsNull()){
-        cerr << "ERROR! ACTUATOR'S YAML CONFIG DATA IS NULL\n";
+        cerr << "ERROR! SENSOR'S YAML CONFIG DATA IS NULL\n";
         return 0;
     }
     ADFUtils::saveRawData(a_node, attribs);
@@ -2161,6 +2167,51 @@ bool ADFLoader_1_0::loadResistanceSensorAttribs(YAML::Node *a_node, afResistance
             }
         }
         return result;
+}
+
+bool ADFLoader_1_0::loadContactSensorAttribs(YAML::Node *a_node, afContactSensorAttributes *attribs)
+{
+    YAML::Node& node = *a_node;
+    if (node.IsNull()){
+        cerr << "ERROR! SENSOR'S YAML CONFIG DATA IS NULL\n";
+        return 0;
+    }
+    ADFUtils::saveRawData(a_node, attribs);
+
+    bool result = true;
+
+    YAML::Node nameNode = node["name"];
+    YAML::Node namespaceNode = node["namespace"];
+    YAML::Node parentNameNode = node["parent"];
+    YAML::Node visibleNode = node["visible"];
+    YAML::Node visibleSizeNode = node["visible size"];
+    YAML::Node publishFrequencyNode = node["publish frequency"];
+    YAML::Node distanceThresholdNode = node["distance threshold"];
+    YAML::Node processContactDetailsNode = node["process contact details"];
+
+    ADFUtils::getIdentificationAttribsFromNode(a_node, &attribs->m_identificationAttribs);
+    ADFUtils::getHierarchyAttribsFromNode(a_node, &attribs->m_hierarchyAttribs);
+    ADFUtils::getCommunicationAttribsFromNode(a_node, &attribs->m_communicationAttribs);
+    ADFUtils::getPluginAttribsFromNode(a_node, &attribs->m_pluginAttribs);
+
+
+    if (visibleNode.IsDefined()){
+        attribs->m_visible = visibleNode.as<bool>();
+    }
+
+    if (visibleSizeNode.IsDefined()){
+        attribs->m_visibleSize = visibleSizeNode.as<double>();
+    }
+
+    if (distanceThresholdNode.IsDefined()){
+        attribs->m_distanceThreshold = distanceThresholdNode.as<double>();
+    }
+
+    if (processContactDetailsNode.IsDefined()){
+        attribs->m_processContactDetails = processContactDetailsNode.as<bool>();
+    }
+
+    return result;
 }
 
 bool ADFLoader_1_0::loadActuatorAttribs(YAML::Node *a_node, afActuatorAttributes *attribs)
@@ -2727,6 +2778,10 @@ bool ADFLoader_1_0::loadModelAttribs(YAML::Node *a_node, afModelAttributes *attr
             }
             case afSensorType::RESISTANCE:{
                 senAttribs = new afResistanceSensorAttributes();
+                break;
+            }
+            case afSensorType::CONTACT:{
+                senAttribs = new afContactSensorAttributes();
                 break;
             }
             default:
