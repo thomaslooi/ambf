@@ -8030,7 +8030,18 @@ void afGhostObject::update(double dt)
     //    cTransform trans;
     //    trans << m_bulletGhostObject->getWorldTransform();
     //    setLocalTransform(trans);
-    m_bulletGhostObject->setWorldTransform(to_btTransform(m_globalTransform));
+    cTransform T_g_p = getLocalTransform();
+    if (m_parentObject){
+        cTransform T_p_w;
+        if (m_parentObject->getType() == afType::RIGID_BODY || m_parentObject->getType() == afType::SOFT_BODY || m_parentObject->getType() == afType::GHOST_OBJECT){
+            T_p_w << ((afInertialObject*)m_parentObject)->getCOMTransform();
+        }
+        else{
+            T_p_w = m_parentObject->getGlobalTransform();
+        }
+        T_g_p = T_p_w * T_g_p;
+    }
+    m_bulletGhostObject->setWorldTransform(to_btTransform(T_g_p));
     m_sensedObjectsMaps.clear();
 
     btManifoldArray* manifoldArray = new btManifoldArray();
