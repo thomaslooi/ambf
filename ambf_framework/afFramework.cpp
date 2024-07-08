@@ -3484,6 +3484,9 @@ bool afJoint::createFromAttribs(afJointAttributes *a_attribs)
             // The rotational limits are inverted in Bullet
             m_sixDof->setLimit(id, -a_attribs->m_sixDofLimits.m_upperLimit[id], -a_attribs->m_sixDofLimits.m_lowerLimit[id]);
         }
+        for (int id = 0 ; id < 6 ; id++){
+            if (a_attribs->m_override_cfm) m_sixDof->setParam(BT_CONSTRAINT_CFM, a_attribs->m_cfm, id);
+        }
 
         m_btConstraint = m_sixDof;
 
@@ -3504,6 +3507,8 @@ bool afJoint::createFromAttribs(afJointAttributes *a_attribs)
             m_sixDofSpring->setDamping(id, a_attribs->m_sixDofSpringAttribs.m_damping[id]);
             m_sixDofSpring->setStiffness(id, a_attribs->m_sixDofSpringAttribs.m_stiffness[id]);
             m_sixDofSpring->enableSpring(id, true);
+            if (a_attribs->m_override_erp) m_sixDofSpring->setParam(BT_CONSTRAINT_ERP, a_attribs->m_erp, id);
+            if (a_attribs->m_override_cfm) m_sixDofSpring->setParam(BT_CONSTRAINT_CFM, a_attribs->m_cfm, id);
         }
 
         m_btConstraint = m_sixDofSpring;

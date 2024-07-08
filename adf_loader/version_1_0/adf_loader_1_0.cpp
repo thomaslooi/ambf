@@ -1927,10 +1927,12 @@ bool ADFLoader_1_0::loadJointAttribs(YAML::Node *a_node, afJointAttributes *attr
     }
 
     if(erpNode.IsDefined()){
+        attribs->m_override_erp = true;
         attribs->m_erp = erpNode.as<double>();
     }
 
     if(cfmNode.IsDefined()){
+        attribs->m_override_cfm = true;
         attribs->m_cfm = cfmNode.as<double>();
     }
 
