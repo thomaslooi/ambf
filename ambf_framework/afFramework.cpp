@@ -8693,6 +8693,7 @@ bool afContactSensor::createFromAttribs(afContactSensorAttributes *a_attribs){
 
     m_parentName = a_attribs->m_hierarchyAttribs.m_parentName;
     m_processContactDetails = a_attribs->m_processContactDetails;
+    // TODO: At the moment the process contact details flag only controls the visualization. Need it to control processing of contact points as well.
 
     setMinPublishFrequency(a_attribs->m_communicationAttribs.m_minPublishFreq);
     setMaxPublishFrequency(a_attribs->m_communicationAttribs.m_maxPublishFreq);
